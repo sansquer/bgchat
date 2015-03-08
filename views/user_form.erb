@@ -1,0 +1,41 @@
+<html>
+<head>
+    <title>BGChat - Création d'un compte</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container">
+
+  <h1>Création d'un nouveau compte</h1>
+
+    <% if session['error_message'] %>
+        <div class="alert alert-danger">
+          <%= session['error_message'] %>
+        </div>
+    <% end %>
+
+    <form action="/users/new" method="post" class="form">
+
+      <div class="form-group">
+        <label for="username">Nom d'utilisateur</label>
+        <input name="username" type="text" placeholder="Nom d'utilisateur"  class="form-control"/>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Mot de passe</label>
+        <input name="password" type="password" placeholder="Mot de passe"  class="form-control"/>
+      </div>
+
+      <div class="form-group">
+        <label for="password2">Mot de passe <i>(répéter)</i></label>
+        <input name="password2" type="password" placeholder="Mot de passe (répéter)"  class="form-control"/>
+      </div>
+
+      <input value="Créer un compte" type="submit" class="btn btn-success" /> - <a href="/" class="btn btn-warning">Annuler</a>
+    </form>
+</div>
+</body>
+</html>
+
+<% session['error_message'] = nil %>

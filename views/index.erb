@@ -1,0 +1,108 @@
+<html>
+<head>
+
+    <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+<title>BGChat</title>
+</head>
+<body>
+
+
+    <div class="container">
+
+      <h1>BGChat</h1>
+
+      <div>
+
+        <% if session['username'] %>
+
+
+            <p>Bonjour, <%= session['username'] %>.  <a href="/users/logout" class="btn btn-warning">Déconnexion</a></p>
+
+        <% else %>
+
+            <form action="/users/login" method="post" class="form-inline">
+
+              <input name="username" type="text" placeholder="Username" class="form-control" />
+              <input name="password" type="password" placeholder="Password" class="form-control" />
+              <input value="connexion" type="submit" class="btn btn-success" />
+              - <a href="/users/new">créer un compte</a>
+
+            </form>
+
+
+        <% end %>
+
+      </div>
+
+      <div style="
+                overflow-y: scroll;
+                height : 70%;
+                margin : 15px;
+      " id="chatcontainer">
+
+        <p style="text-align: center;padding-top: 20%">Loading...</p>
+
+      </div>
+
+        <br />
+
+      <input  style="width:100%;" type="text" name="content" class="form-control" id="content" placeholder="Entrez votre message ici..."/>
+
+    </div>
+
+    <script>
+        $(function() {
+
+            var messages;
+            var chatcontainer = $('#chatcontainer');
+            var height = chatcontainer[0].scrollHeight;
+            <% if session['username'] %>
+                var username = "<%= session['username'] %>";
+            <% else %>
+                var username = "anonymous";
+            <% end %>
+
+            setInterval(update, 1000);
+
+            function update() {
+                // initalisation des messages
+                $.get("/messages", function (data) {
+
+                    // récupération de tous les messages dans un tableau
+                    messages = $.parseJSON(data);
+
+                    // efface tous les contenus précédents
+                    chatcontainer.html('');
+
+                    // affiche tous les messages
+                    messages.forEach(function (message) {
+                        writeMessage(message['username'], message['content']);
+                    });
+
+                });
+            }
+
+
+            // envoi du message
+            $('#content').keypress(function(e) {
+                if(e.which == 13) {
+                    var m = this.value;
+                    $.post('/messages', {content: m});
+                    this.value = '';
+
+                    //writeMessage(username, m);
+                }
+            });
+
+            function writeMessage(pseudo, text){
+                chatcontainer.append("<p style=\"padding: 8px; margin: 6px; border: 1px solid #bce8f1; border-radius: 4px; color: #31708f; background-color: #d9edf7; \"><strong>" + pseudo + " : </strong>" + text + "</p>");
+
+                // scroll vers le bas du chat
+                height = chatcontainer[0].scrollHeight;
+                chatcontainer.scrollTop(height);
+            }
+        });
+    </script>
+</body>
+</html>
